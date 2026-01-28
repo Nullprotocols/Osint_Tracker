@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: osint-lookup-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: RENDER
+        value: true
+      - key: PORT
+        value: 8080
+      - key: WEB_SERVER_HOST
+        value: 0.0.0.0
+      - key: BASE_WEBHOOK_URL
+        fromService:
+          type: web
+          name: osint-lookup-bot
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: WEBHOOK_PATH
+        value: /webhook
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: RENDER_DB_PATH
+        value: /tmp/nullprotocol.db
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: data
+      mountPath: /tmp
+      sizeGB: 1
